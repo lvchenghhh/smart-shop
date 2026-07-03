@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'商品详情 - ' + ${product.name}">商品详情</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .product-detail {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .product-detail .detail-image {
+            width: 360px;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #f0f0f0;
+            flex-shrink: 0;
+        }
+        .product-detail .detail-info {
+            flex: 1;
+            min-width: 280px;
+        }
+        .product-detail .detail-info h2 {
+            font-size: 22px;
+            color: #1a1a1a;
+            margin-bottom: 14px;
+        }
+        .product-detail .detail-info .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+        .product-detail .detail-info .meta-item .label {
+            color: #888;
+            width: 55px;
+            flex-shrink: 0;
+        }
+        .product-detail .detail-info .price-lg {
+            font-size: 28px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .product-detail .detail-info .price-lg::before {
+            content: '¥';
+            font-size: 18px;
+        }
+        .product-detail .detail-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+        }
+
+        /* 评论区域 */
+        .comment-section {
+            margin-top: 30px;
+        }
+        .comment-section .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #3498db;
+            margin-bottom: 20px;
+        }
+        .comment-item {
+            display: flex;
+            gap: 14px;
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .comment-item .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .comment-item .comment-body {
+            flex: 1;
+        }
+        .comment-item .comment-user {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .comment-item .comment-time {
+            font-size: 12px;
+            color: #aaa;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+        .comment-item .comment-text {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .comment-item .comment-photo {
+            max-width: 200px;
+            max-height: 150px;
+            border-radius: 8px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 1px solid #eee;
+        }
+        .comment-empty {
+            text-align: center;
+            color: #bbb;
+            padding: 40px;
+            font-size: 14px;
+        }
+
+        /* 评论表单 */
+        .comment-form-card {
+            margin-top: 24px;
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .comment-form-card .form-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 14px;
+        }
+        .comment-form-card textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        .comment-form-card textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52,152,219,0.15);
+        }
+        .comment-form-card .form-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .comment-form-card .photo-upload {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .comment-form-card .photo-upload label {
+            cursor: pointer;
+            padding: 8px 14px;
+            background: #fff;
+            border: 1px dashed #ccc;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .comment-form-card .photo-upload label:hover {
+            border-color: #3498db;
+            color: #3498db;
+        }
+        .comment-form-card .photo-upload input[type="file"] {
+            display: none;
+        }
+        .comment-form-card .photo-preview {
+            max-width: 100px;
+            max-height: 60px;
+            border-radius: 6px;
+            object-fit: cover;
+            display: none;
+        }
+
+        .btn-favorite {
+            background: #f39c12;
+        }
+        .btn-favorite:hover {
+            background: #d68910;
+        }
+        .btn-favorited {
+            background: #e74c3c;
+        }
+        .btn-favorited:hover {
+            background: #c0392b;
+        }
+        .btn-back {
+            background: #95a5a6;
+        }
+        .btn-back:hover {
+            background: #7f8c8d;
+        }
+    </style>
+    <script>
+        // 图片预览
+        function previewPhoto(input) {
+            var preview = document.getElementById('photoPreview');
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'inline-block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+        // 点击评论图片放大查看
+        function viewFullImage(src) {
+            window.open(src, '_blank');
+        }
+    </script>
+</head>
+<body>
+<div class="page-container">
+
+    <!-- 面包屑 -->
+    <div class="breadcrumb">
+        <a th:href="@{/product/list}" style="color:#3498db;text-decoration:none;">📦 商品管理</a>
+        &nbsp;&gt;&nbsp; 商品详情
+        &nbsp;&gt;&nbsp; <span th:text="${product.name}">商品名称</span>
+    </div>
+
+    <!-- 操作提示 -->
+    <div class="alert alert-success" th:if="${msg}" th:text="${msg}"></div>
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+    <!-- 商品信息区 -->
+    <div class="card">
+        <div class="product-detail">
+            <img class="detail-image"
+                 th:src="${product.photoUrl}"
+                 onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22360%22 height=%22260%22><rect fill=%22%23eee%22 width=%22360%22 height=%22260%22/><text x=%22130%22 y=%22135%22 fill=%22%23999%22 font-size=%2216%22>暂无图片</text></svg>'"
+                 th:alt="${product.name}">
+            <div class="detail-info">
+                <h2 th:text="${product.name}">商品名称</h2>
+                <div class="meta-item">
+                    <span class="label">分类：</span>
+                    <span th:if="${product.categoryName != null}"
+                          style="background:#e8f4fd;color:#2980b9;padding:3px 12px;border-radius:12px;font-size:12px;"
+                          th:text="${product.categoryName}">分类</span>
+                </div>
+                <div class="meta-item">
+                    <span class="label">价格：</span>
+                    <span class="price-lg" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')}">5999.00</span>
+                </div>
+                <div class="meta-item">
+                    <span class="label">描述：</span>
+                    <span th:text="${product.descp}">商品描述</span>
+                </div>
+                <div class="meta-item">
+                    <span class="label">发布：</span>
+                    <span th:text="${#dates.format(product.releaseDate, 'yyyy-MM-dd')}">2024-01-01</span>
+                </div>
+                <div class="detail-actions">
+                    <!-- 收藏按钮 -->
+                    <form th:if="${!isFavorited}" th:action="@{/favorite/add}" method="post" style="display:inline;">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        <button type="submit" class="btn btn-favorite">⭐ 收藏商品</button>
+                    </form>
+                    <a th:if="${isFavorited}"
+                       th:href="@{/favorite/remove/{id}(id=${product.id})}"
+                       class="btn btn-favorited"
+                       onclick="return confirm('确定要取消收藏吗？')">❤️ 取消收藏</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 评论列表区 -->
+    <div class="card comment-section">
+        <div class="section-title">
+            💬 商品评论
+            <span style="font-weight:normal;font-size:13px;color:#999;" th:if="${comments != null}">
+                （共 <span th:text="${#lists.size(comments)}">0</span> 条）
+            </span>
+        </div>
+
+        <!-- 评论列表 -->
+        <div th:if="${comments == null || #lists.isEmpty(comments)}" class="comment-empty">
+            暂无评论，快来发表第一条评论吧～
+        </div>
+        <div th:each="comment : ${comments}" class="comment-item">
+            <div class="avatar" th:text="${#strings.substring(comment.username, 0, 1)}">U</div>
+            <div class="comment-body">
+                <div class="comment-user">
+                    <span th:text="${comment.username}">用户名</span>
+                    <span class="comment-time" th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</span>
+                </div>
+                <div class="comment-text" th:text="${comment.content}">评论内容</div>
+                <img th:if="${comment.photoUrl != null and !#strings.isEmpty(comment.photoUrl)}"
+                     class="comment-photo"
+                     th:src="${comment.photoUrl}"
+                     th:onclick="'viewFullImage(\'' + ${comment.photoUrl} + '\')'"
+                     onerror="this.style.display='none'"
+                     alt="评论图片">
+            </div>
+        </div>
+
+        <!-- 评论表单 -->
+        <div class="comment-form-card">
+            <div class="form-title">✍️ 发表评论</div>
+            <form th:action="@{/product/comment}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="productId" th:value="${product.id}">
+                <textarea name="content" placeholder="写下您对这件商品的评价..." required></textarea>
+                <div class="form-footer">
+                    <div class="photo-upload">
+                        <label for="photoInput">📷 上传图片（可选）</label>
+                        <input type="file" id="photoInput" name="photo" accept="image/*" onchange="previewPhoto(this)">
+                        <img id="photoPreview" class="photo-preview" src="" alt="预览">
+                    </div>
+                    <button type="submit" class="btn btn-primary">💬 发表评论</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
