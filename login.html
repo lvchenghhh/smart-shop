@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧商品信息管理系统 - 登录</title>
+    <style>
+        .login-container { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .login-box { width: 400px; background: #fff; border-radius: 12px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .login-box h2 { text-align: center; color: #333; margin-bottom: 30px; font-size: 24px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 6px; color: #555; font-weight: 500; }
+        .form-group input { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; box-sizing: border-box; transition: border-color 0.3s; }
+        .form-group input:focus { outline: none; border-color: #667eea; }
+        .btn-login { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: opacity 0.3s; }
+        .btn-login:hover { opacity: 0.9; }
+        .login-info { margin-top: 20px; padding: 12px; background: #f8f9fa; border-radius: 6px; font-size: 13px; color: #666; line-height: 1.8; }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-box">
+        <h2>🔐 智慧商品信息管理系统</h2>
+        <form onsubmit="event.preventDefault(); window.location.href='index.html';">
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" placeholder="请输入用户名" value="admin" required autofocus>
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" placeholder="请输入密码" value="123456" required>
+            </div>
+            <button type="submit" class="btn-login">登 录</button>
+        </form>
+        <div class="login-info">
+            <strong>💡 演示账号：</strong><br>
+            管理员：admin / 123456（全部权限）<br>
+            普通用户：bob / 123456（受限权限）<br>
+            <span style="color:#999;font-size:12px;">（本页面为静态演示版，直接点击登录即可进入）</span>
+        </div>
+    </div>
+</div>
+</body>
+</html>
